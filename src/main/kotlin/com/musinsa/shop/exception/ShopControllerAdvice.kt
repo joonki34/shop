@@ -10,6 +10,11 @@ private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class ShopControllerAdvice : ResponseEntityExceptionHandler() {
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        return BadRequest(e.message ?: "Bad Request").toResponseEntity()
+    }
+
     @ExceptionHandler(ShopException::class)
     fun handleShopException(e: ShopException): ResponseEntity<ErrorResponse> {
         log.error(e) { "${e.javaClass.simpleName}(${e.message}), Cause by: ${e.cause}" }

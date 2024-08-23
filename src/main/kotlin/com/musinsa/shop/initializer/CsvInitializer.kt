@@ -2,6 +2,9 @@ package com.musinsa.shop.initializer
 
 import com.musinsa.shop.brand.BrandService
 import com.musinsa.shop.brand.dto.BrandCreateRequest
+import com.musinsa.shop.product.ProductCategory
+import com.musinsa.shop.product.ProductService
+import com.musinsa.shop.product.dto.ProductCreateRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.core.io.Resource
@@ -17,7 +20,8 @@ import java.nio.file.Paths
 class CsvInitializer(
     @Value("classpath:data.csv")
     private val resource: Resource,
-    private val brandService: BrandService
+    private val brandService: BrandService,
+    private val productService: ProductService
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
@@ -43,7 +47,20 @@ class CsvInitializer(
 
         // Save data to database
         dataList.forEach { data ->
-            brandService.createBrand(BrandCreateRequest(data.brandName).toEntity())
+            val brand = brandService.createBrand(BrandCreateRequest(data.brandName).toEntity())
+            val brandId = brand.id!!
+            listOf(
+                ProductCategory.TOP to data.topPrice,
+                ProductCategory.OUTER to data.outerPrice,
+                ProductCategory.PANTS to data.pantsPrice,
+                ProductCategory.SNEAKERS to data.sneakersPrice,
+                ProductCategory.BAG to data.bagPrice,
+                ProductCategory.HAT to data.hatPrice,
+                ProductCategory.SOCKS to data.socksPrice,
+                ProductCategory.ACCESSORY to data.accessoryPrice,
+            ).forEach {
+                productService.createProduct(ProductCreateRequest(brandId, it.first, it.second))
+            }
         }
     }
 }

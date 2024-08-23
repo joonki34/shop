@@ -1,6 +1,7 @@
 package com.musinsa.shop.brand
 
 import com.musinsa.shop.brand.dto.BrandCreateRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -13,7 +14,7 @@ class BrandController(private val service: BrandService) {
     }
 
     @PostMapping
-    fun createBrand(@RequestBody request: BrandCreateRequest): BrandResponse {
+    fun createBrand(@RequestBody @Valid request: BrandCreateRequest): BrandResponse {
         return BrandResponse.of(service.createBrand(request.toEntity()))
     }
 
