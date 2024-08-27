@@ -1,6 +1,6 @@
 package com.musinsa.shop.product
 
-import com.musinsa.shop.brand.Brand
+import com.musinsa.shop.fixtures.Fixtures
 import com.musinsa.shop.product.dto.ProductCreateRequest
 import com.musinsa.shop.product.dto.ProductUpdateRequest
 import com.musinsa.shop.restdocs.RestDocCommon
@@ -28,12 +28,7 @@ class ProductControllerTest : RestDocCommon() {
     @Test
     fun getProduct() {
         // given
-        every { service.getProduct(any()) } returns Product(
-            id = 1L,
-            brand = Brand(id = 1L, name = "test"),
-            price = 10000,
-            category = ProductCategory.BAG
-        )
+        every { service.getProduct(any()) } returns Fixtures.product
 
         // when
         val result = mockMvc.perform(get("/v1/products/{id}", 1L))
@@ -52,12 +47,7 @@ class ProductControllerTest : RestDocCommon() {
     @Test
     fun createProduct() {
         // given
-        every { service.createProduct(any()) } returns Product(
-            id = 1L,
-            brand = Brand(id = 1L, name = "test"),
-            price = 10000,
-            category = ProductCategory.BAG
-        )
+        every { service.createProduct(any()) } returns Fixtures.product
 
         // when
         val result = mockMvc.perform(
@@ -67,7 +57,7 @@ class ProductControllerTest : RestDocCommon() {
                         ProductCreateRequest(
                             price = 10000,
                             brandId = 1L,
-                            category = ProductCategory.BAG
+                            category = ProductCategory.BAG.description
                         )
                     )
                 )
@@ -90,12 +80,7 @@ class ProductControllerTest : RestDocCommon() {
     @Test
     fun updateProduct() {
         // given
-        every { service.updateProduct(any(), any()) } returns Product(
-            id = 1L,
-            price = 20000,
-            brand = Brand(id = 1L, name = "test"),
-            category = ProductCategory.BAG
-        )
+        every { service.updateProduct(any(), any()) } returns Fixtures.product
 
         // when
         val result = mockMvc.perform(
@@ -104,7 +89,7 @@ class ProductControllerTest : RestDocCommon() {
                     objectMapper.writeValueAsBytes(
                         ProductUpdateRequest(
                             price = 20000,
-                            category = ProductCategory.BAG
+                            category = ProductCategory.BAG.description
                         )
                     )
                 )

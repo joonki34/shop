@@ -5,6 +5,7 @@ import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.product.dto.ProductCreateRequest
 import com.musinsa.shop.product.dto.ProductUpdateRequest
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProductService(private val repository: ProductRepository, private val brandService: BrandService) {
@@ -12,11 +13,14 @@ class ProductService(private val repository: ProductRepository, private val bran
         return repository.findById(id).orElseThrow { NotFound("Product not found") }
     }
 
+    @Transactional
     fun createProduct(request: ProductCreateRequest): Product {
         val brand = brandService.getBrand(request.brandId)
+        val category =
+            ProductCategory.descriptionMap[request.category] ?: throw IllegalArgumentException("Invalid request")
 
         // Only one product per category is allowed
-        val productByCategory = repository.findByBrandIdAndCategory(brand.id!!, request.category)
+        val productByCategory = repository.findByBrandIdAndCategory(brand.id!!, category)
         if (productByCategory != null) {
             throw IllegalArgumentException("Only one product per category is allowed")
         }
@@ -24,16 +28,19 @@ class ProductService(private val repository: ProductRepository, private val bran
         return repository.save(request.toEntity(brand))
     }
 
+    @Transactional
     fun updateProduct(id: Long, request: ProductUpdateRequest): Product {
         val product = repository.findById(id).orElseThrow { NotFound("Product not found") }
+        val category =
+            ProductCategory.descriptionMap[request.category] ?: throw IllegalArgumentException("Invalid request")
 
         // Only one product per category is allowed
-        val productByCategory = repository.findByBrandIdAndCategory(product.brand.id!!, request.category)
+        val productByCategory = repository.findByBrandIdAndCategory(product.brand.id!!, category)
         if (productByCategory != null && product.id != productByCategory.id) {
             throw IllegalArgumentException("Only one product per category is allowed")
         }
 
-        return repository.save(product.update(request.category, request.price))
+        return repository.save(product.update(category, request.price))
     }
 
     fun deleteProduct(id: Long) {

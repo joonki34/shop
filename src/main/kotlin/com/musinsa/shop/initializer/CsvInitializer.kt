@@ -59,7 +59,7 @@ class CsvInitializer(
                 ProductCategory.SOCKS to data.socksPrice,
                 ProductCategory.ACCESSORY to data.accessoryPrice,
             ).forEach {
-                productService.createProduct(ProductCreateRequest(brandId, it.first, it.second))
+                productService.createProduct(ProductCreateRequest(brandId, it.first.description, it.second))
             }
         }
     }

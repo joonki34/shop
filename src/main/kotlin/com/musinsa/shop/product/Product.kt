@@ -5,7 +5,13 @@ import com.musinsa.shop.common.BaseAuditEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "product")
+@Table(
+    name = "product",
+    indexes = [
+        Index(name = "idx_brand_id", columnList = "brand_id"),
+        Index(name = "idx_category", columnList = "category, price")
+    ]
+)
 class Product(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

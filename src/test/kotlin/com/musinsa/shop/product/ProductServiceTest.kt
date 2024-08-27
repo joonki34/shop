@@ -47,7 +47,7 @@ class ProductServiceTest {
     @Test
     fun `createProduct should save and return a product`() {
         // Given
-        val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP, price = 10000)
+        val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
         val brand = Brand(id = 1L, name = "Test Brand")
         val product = Product(id = 1L, brand = brand, category = ProductCategory.TOP, price = 10000)
         every { brandService.getBrand(any()) } returns brand
@@ -64,7 +64,7 @@ class ProductServiceTest {
     @Test
     fun `createProduct should throw IllegalArgumentException when product with same category already exists`() {
         // Given
-        val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP, price = 10000)
+        val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
         val brand = Brand(id = 1L, name = "Test Brand")
         val existingProduct = Product(id = 1L, brand = brand, category = ProductCategory.TOP, price = 10000)
         every { brandService.getBrand(any()) } returns brand
@@ -78,7 +78,7 @@ class ProductServiceTest {
     fun `updateProduct should update and return a product`() {
         // Given
         val id = 1L
-        val request = ProductUpdateRequest(category = ProductCategory.PANTS, price = 20000)
+        val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         val brand = Brand(id = 1L, name = "Test Brand")
         val existingProduct = Product(id = id, brand = brand, category = ProductCategory.TOP, price = 10000)
         val updatedProduct = Product(id = id, brand = brand, category = ProductCategory.PANTS, price = 20000)
@@ -97,7 +97,7 @@ class ProductServiceTest {
     fun `updateProduct should throw NotFound exception when product not found`() {
         // Given
         val id = 1L
-        val request = ProductUpdateRequest(category = ProductCategory.PANTS, price = 20000)
+        val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         every { repository.findById(any()) } returns Optional.empty()
 
         // When / Then
@@ -108,7 +108,7 @@ class ProductServiceTest {
     fun `updateProduct should throw IllegalArgumentException when product with same category already exists`() {
         // Given
         val id = 1L
-        val request = ProductUpdateRequest(category = ProductCategory.PANTS, price = 20000)
+        val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         val brand = Brand(id = 1L, name = "Test Brand")
         val existingProduct = Product(id = id, brand = brand, category = ProductCategory.TOP, price = 10000)
         val anotherProduct = Product(id = 2L, brand = brand, category = ProductCategory.PANTS, price = 15000)

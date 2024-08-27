@@ -7,9 +7,10 @@ import jakarta.validation.constraints.Min
 
 data class ProductCreateRequest(
     val brandId: Long,
-    val category: ProductCategory,
+    val category: String,
     @field:Min(0)
     val price: Int
 ) {
-    fun toEntity(brand: Brand) = Product(brand = brand, category = category, price = price)
+    fun toEntity(brand: Brand) =
+        Product(brand = brand, category = ProductCategory.descriptionMap[category]!!, price = price)
 }
