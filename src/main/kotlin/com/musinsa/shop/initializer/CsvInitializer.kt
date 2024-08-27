@@ -2,9 +2,11 @@ package com.musinsa.shop.initializer
 
 import com.musinsa.shop.brand.BrandService
 import com.musinsa.shop.brand.dto.BrandCreateRequest
+import com.musinsa.shop.exception.InternalServerError
 import com.musinsa.shop.product.ProductCategory
 import com.musinsa.shop.product.ProductService
 import com.musinsa.shop.product.dto.ProductCreateRequest
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.core.io.Resource
@@ -14,6 +16,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 
+private val log = KotlinLogging.logger { }
 
 @Component
 @Transactional
@@ -27,25 +30,42 @@ class CsvInitializer(
     override fun run(vararg args: String?) {
         // Read CSV from resource
         val lines = Files.readAllLines(Paths.get(resource.uri), StandardCharsets.UTF_8)
+
+        if (lines.isEmpty()) {
+            throw InternalServerError("CSV file is empty")
+        }
+
         lines.removeFirst() // Remove header line
 
         // Parse CSV to DTO
-        val dataList = lines.map { line -> line.split(",") }
-            .map {
-                InitData(
-                    brandName = it[0],
-                    topPrice = it[1].toInt(),
-                    outerPrice = it[2].toInt(),
-                    pantsPrice = it[3].toInt(),
-                    sneakersPrice = it[4].toInt(),
-                    bagPrice = it[5].toInt(),
-                    hatPrice = it[6].toInt(),
-                    socksPrice = it[7].toInt(),
-                    accessoryPrice = it[8].toInt()
-                )
-            }
+        val dataList = parseCsv(lines)
 
         // Save data to database
+        saveDatabase(dataList)
+    }
+
+    private fun parseCsv(lines: MutableList<String>) = lines.map { line -> line.split(",") }
+        .filter {
+            if (it.size != COLUMN_SIZE) {
+                log.error { "Invalid row: $it" }
+            }
+            it.size == COLUMN_SIZE
+        }
+        .map {
+            InitData(
+                brandName = it[0],
+                topPrice = it[1].toInt(),
+                outerPrice = it[2].toInt(),
+                pantsPrice = it[3].toInt(),
+                sneakersPrice = it[4].toInt(),
+                bagPrice = it[5].toInt(),
+                hatPrice = it[6].toInt(),
+                socksPrice = it[7].toInt(),
+                accessoryPrice = it[8].toInt()
+            )
+        }
+
+    private fun saveDatabase(dataList: List<InitData>) {
         dataList.forEach { data ->
             val brand = brandService.createBrand(BrandCreateRequest(data.brandName).toEntity())
             val brandId = brand.id!!
@@ -62,6 +82,10 @@ class CsvInitializer(
                 productService.createProduct(ProductCreateRequest(brandId, it.first.description, it.second))
             }
         }
+    }
+
+    companion object {
+        private const val COLUMN_SIZE = 9
     }
 }
 
