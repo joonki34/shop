@@ -12,17 +12,21 @@ import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.util.*
 
 class ProductServiceTest {
 
     private val repository = mockk<ProductRepository>()
     private val brandService = mockk<BrandService>()
-    private val service = ProductService(repository, brandService)
+    private val eventPublisher = mockk<ApplicationEventPublisher>()
+    private val service = ProductService(repository, brandService, eventPublisher)
 
     @BeforeEach
     fun setUp() {
         every { brandService.updatePrice(any(), any()) } just Runs
+
+        every { eventPublisher.publishEvent(any()) } just Runs
     }
 
     @Test
@@ -113,7 +117,6 @@ class ProductServiceTest {
         // Given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
-        val brand = Fixtures.brand
         val existingProduct = Fixtures.createProduct(id = id, category = ProductCategory.TOP, price = 10000)
         val anotherProduct = Fixtures.createProduct(id = 2L, category = ProductCategory.PANTS, price = 15000)
         every { repository.findById(any()) } returns Optional.of(existingProduct)

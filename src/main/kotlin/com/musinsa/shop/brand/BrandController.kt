@@ -1,6 +1,7 @@
 package com.musinsa.shop.brand
 
 import com.musinsa.shop.brand.dto.BrandCreateRequest
+import com.musinsa.shop.brand.dto.BrandResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -22,11 +23,5 @@ class BrandController(private val service: BrandService) {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteBrand(@PathVariable("id") id: Long) {
         service.deleteBrand(id)
-    }
-}
-
-data class BrandResponse(val id: Long, val name: String) {
-    companion object {
-        fun of(brand: Brand) = BrandResponse(brand.id!!, brand.name)
     }
 }

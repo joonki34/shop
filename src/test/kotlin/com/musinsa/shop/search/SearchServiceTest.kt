@@ -3,6 +3,8 @@ package com.musinsa.shop.search
 import com.musinsa.shop.brand.BrandRepository
 import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.fixtures.Fixtures
+import com.musinsa.shop.minproduct.MinProduct
+import com.musinsa.shop.minproduct.MinProductRepository
 import com.musinsa.shop.product.ProductCategory
 import com.musinsa.shop.product.ProductRepository
 import io.mockk.every
@@ -15,7 +17,23 @@ class SearchServiceTest {
 
     private val productRepository = mockk<ProductRepository>()
     private val brandRepository = mockk<BrandRepository>()
-    private val service = SearchService(productRepository, brandRepository)
+    private val minProductRepository = mockk<MinProductRepository>()
+    private val service = SearchService(productRepository, brandRepository, minProductRepository)
+
+    @Test
+    fun `findMinProductByCategory should return list of products`() {
+        every { minProductRepository.findAll() } returns mutableListOf(
+            MinProduct(
+                category = ProductCategory.BAG,
+                product = Fixtures.product
+            )
+        )
+
+        val result = service.findMinProductByCategory()
+
+        assertEquals(1, result.size)
+        assertEquals(ProductCategory.BAG, result[0].category)
+    }
 
     @Test
     fun `findMinMaxProductByCategory should return the lowest and highest priced products for the given category`() {

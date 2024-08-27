@@ -1,8 +1,11 @@
 package com.musinsa.shop.fixtures
 
 import com.musinsa.shop.brand.Brand
+import com.musinsa.shop.minproduct.MinProduct
 import com.musinsa.shop.product.Product
 import com.musinsa.shop.product.ProductCategory
+import com.musinsa.shop.product.ProductEvent
+import com.musinsa.shop.product.ProductEventType
 
 object Fixtures {
     fun createBrand(totalPrice: Int = 0) =
@@ -14,4 +17,9 @@ object Fixtures {
         Product(id = id, brand = brand, price = price, category = category)
 
     val product = createProduct()
+
+    fun createProductEvent(eventType: ProductEventType = ProductEventType.CREATED, product: Product = createProduct()) =
+        ProductEvent.of(1, eventType, product)
+
+    fun createMinProduct(category: ProductCategory = ProductCategory.BAG) = MinProduct(1L, category, product)
 }

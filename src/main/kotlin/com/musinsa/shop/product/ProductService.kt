@@ -5,11 +5,16 @@ import com.musinsa.shop.brand.BrandService
 import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.product.dto.ProductCreateRequest
 import com.musinsa.shop.product.dto.ProductUpdateRequest
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ProductService(private val repository: ProductRepository, private val brandService: BrandService) {
+class ProductService(
+    private val repository: ProductRepository,
+    private val brandService: BrandService,
+    private val eventPublisher: ApplicationEventPublisher
+) {
     fun getProduct(id: Long): Product {
         return repository.findById(id).orElseThrow { NotFound("Product not found") }
     }
@@ -29,7 +34,11 @@ class ProductService(private val repository: ProductRepository, private val bran
         // Update brand price
         updateBrandPrice(brand, request.price)
 
-        return repository.save(request.toEntity(brand))
+
+        return repository.save(request.toEntity(brand)).also {
+            // Publish event
+            eventPublisher.publishEvent(ProductEvent.of(this, ProductEventType.CREATED, it))
+        }
     }
 
     @Transactional
@@ -47,13 +56,20 @@ class ProductService(private val repository: ProductRepository, private val bran
         // Update brand price
         updateBrandPrice(product.brand, request.price - product.price)
 
-        return repository.save(product.update(category, request.price))
+        return repository.save(product.update(category, request.price)).also {
+            // Publish event
+            eventPublisher.publishEvent(ProductEvent.of(this, ProductEventType.UPDATED, it))
+        }
     }
 
     @Transactional
     fun deleteProduct(id: Long) {
         val product = repository.findById(id).orElseThrow { NotFound("Product not found") }
+
         repository.delete(product)
+
+        // Publish event
+        eventPublisher.publishEvent(ProductEvent.of(this, ProductEventType.DELETED, product))
 
         // Update brand price
         updateBrandPrice(product.brand, product.price)
@@ -62,4 +78,5 @@ class ProductService(private val repository: ProductRepository, private val bran
     private fun updateBrandPrice(brand: Brand, price: Int) {
         brandService.updatePrice(brand, price)
     }
+
 }

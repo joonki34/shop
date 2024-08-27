@@ -21,6 +21,29 @@ class SearchControllerTest : RestDocCommon() {
     lateinit var service: SearchService
 
     @Test
+    fun findMinProductByCategory() {
+        // given
+        every { service.findMinProductByCategory() } returns listOf(Fixtures.product)
+
+        // when
+        val result = mockMvc.perform(get("/v1/search/min-product-by-category"))
+
+        // then
+        result.andExpect(status().isOk)
+            .andDo(
+                document(
+                    "search/min-product-by-category", responseFields(
+                        fieldWithPath("list").type(JsonFieldType.ARRAY).description("상품 리스트"),
+                        fieldWithPath("list[].category").description("카테고리"),
+                        fieldWithPath("list[].brandName").description("브랜드명"),
+                        fieldWithPath("list[].price").description("상품 가격"),
+                        fieldWithPath("total").description("총 가격"),
+                    )
+                )
+            )
+    }
+
+    @Test
     fun findMinBrand() {
         // given
         every { service.findMinBrand() } returns (Fixtures.brand to listOf(Fixtures.product))
