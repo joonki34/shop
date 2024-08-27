@@ -1,5 +1,7 @@
 package com.musinsa.shop.search
 
+import com.musinsa.shop.brand.BrandRepository
+import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.fixtures.Fixtures
 import com.musinsa.shop.product.ProductCategory
 import com.musinsa.shop.product.ProductRepository
@@ -7,11 +9,13 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class SearchServiceTest {
 
     private val productRepository = mockk<ProductRepository>()
-    private val searchService = SearchService(productRepository)
+    private val brandRepository = mockk<BrandRepository>()
+    private val service = SearchService(productRepository, brandRepository)
 
     @Test
     fun `findMinMaxProductByCategory should return the lowest and highest priced products for the given category`() {
@@ -21,7 +25,7 @@ class SearchServiceTest {
         every { productRepository.findFirstByCategoryOrderByPrice(category) } returns lowest
         every { productRepository.findFirstByCategoryOrderByPriceDesc(category) } returns highest
 
-        val (actualLowest, actualHighest) = searchService.findMinMaxProductByCategory(category)
+        val (actualLowest, actualHighest) = service.findMinMaxProductByCategory(category)
 
         assertEquals(lowest, actualLowest)
         assertEquals(highest, actualHighest)
@@ -33,9 +37,32 @@ class SearchServiceTest {
         every { productRepository.findFirstByCategoryOrderByPrice(category) } returns null
         every { productRepository.findFirstByCategoryOrderByPriceDesc(category) } returns null
 
-        val (actualLowest, actualHighest) = searchService.findMinMaxProductByCategory(category)
+        val (actualLowest, actualHighest) = service.findMinMaxProductByCategory(category)
 
         assertEquals(null, actualLowest)
         assertEquals(null, actualHighest)
+    }
+
+    @Test
+    fun `findMinBrand should return brand and its products when brand exists`() {
+        // Given
+        val brand = Fixtures.createBrand(totalPrice = 10000)
+        val products = listOf(Fixtures.product)
+        every { brandRepository.findFirstByOrderByTotalPrice() } returns brand
+        every { productRepository.findByBrandId(brand.id!!) } returns products
+
+        // When
+        val result = service.findMinBrand()
+
+        // Then
+        assertEquals(brand to products, result)
+        assertEquals(10000, result.first.totalPrice)
+    }
+
+    @Test
+    fun `findMinBrand should throw NotFound exception when brand does not exist`() {
+        every { brandRepository.findFirstByOrderByTotalPrice() } returns null
+
+        assertThrows<NotFound> { service.findMinBrand() }
     }
 }

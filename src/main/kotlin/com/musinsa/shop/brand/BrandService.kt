@@ -17,4 +17,8 @@ class BrandService(private val repository: BrandRepository) {
         return repository.findById(id).orElseThrow { NotFound("Brand not found") }
     }
 
+    fun updatePrice(brand: Brand, price: Int) {
+        repository.updateTotalPrice(brand.id!!, price)
+    }
+
 }

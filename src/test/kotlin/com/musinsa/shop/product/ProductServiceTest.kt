@@ -1,14 +1,15 @@
 package com.musinsa.shop.product
 
-import com.musinsa.shop.brand.Brand
 import com.musinsa.shop.brand.BrandService
 import com.musinsa.shop.exception.NotFound
+import com.musinsa.shop.fixtures.Fixtures
 import com.musinsa.shop.product.dto.ProductCreateRequest
 import com.musinsa.shop.product.dto.ProductUpdateRequest
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
@@ -19,12 +20,16 @@ class ProductServiceTest {
     private val brandService = mockk<BrandService>()
     private val service = ProductService(repository, brandService)
 
+    @BeforeEach
+    fun setUp() {
+        every { brandService.updatePrice(any(), any()) } just Runs
+    }
+
     @Test
     fun `getProduct should return a product by id`() {
         // Given
         val id = 1L
-        val brand = Brand(id = 1L, name = "Test Brand")
-        val product = Product(id = id, brand = brand, category = ProductCategory.TOP, price = 10000)
+        val product = Fixtures.createProduct(id)
         every { repository.findById(any()) } returns Optional.of(product)
 
         // When
@@ -48,8 +53,8 @@ class ProductServiceTest {
     fun `createProduct should save and return a product`() {
         // Given
         val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
-        val brand = Brand(id = 1L, name = "Test Brand")
-        val product = Product(id = 1L, brand = brand, category = ProductCategory.TOP, price = 10000)
+        val brand = Fixtures.brand
+        val product = Fixtures.product
         every { brandService.getBrand(any()) } returns brand
         every { repository.findByBrandIdAndCategory(any(), any()) } returns null
         every { repository.save(any()) } returns product
@@ -65,7 +70,7 @@ class ProductServiceTest {
     fun `createProduct should throw IllegalArgumentException when product with same category already exists`() {
         // Given
         val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
-        val brand = Brand(id = 1L, name = "Test Brand")
+        val brand = Fixtures.brand
         val existingProduct = Product(id = 1L, brand = brand, category = ProductCategory.TOP, price = 10000)
         every { brandService.getBrand(any()) } returns brand
         every { repository.findByBrandIdAndCategory(any(), any()) } returns existingProduct
@@ -79,9 +84,8 @@ class ProductServiceTest {
         // Given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
-        val brand = Brand(id = 1L, name = "Test Brand")
-        val existingProduct = Product(id = id, brand = brand, category = ProductCategory.TOP, price = 10000)
-        val updatedProduct = Product(id = id, brand = brand, category = ProductCategory.PANTS, price = 20000)
+        val existingProduct = Fixtures.createProduct(id, price = 10000)
+        val updatedProduct = Fixtures.createProduct(id, price = 20000)
         every { repository.findById(any()) } returns Optional.of(existingProduct)
         every { repository.findByBrandIdAndCategory(any(), any()) } returns null
         every { repository.save(any()) } returns updatedProduct
@@ -109,9 +113,9 @@ class ProductServiceTest {
         // Given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
-        val brand = Brand(id = 1L, name = "Test Brand")
-        val existingProduct = Product(id = id, brand = brand, category = ProductCategory.TOP, price = 10000)
-        val anotherProduct = Product(id = 2L, brand = brand, category = ProductCategory.PANTS, price = 15000)
+        val brand = Fixtures.brand
+        val existingProduct = Fixtures.createProduct(id = id, category = ProductCategory.TOP, price = 10000)
+        val anotherProduct = Fixtures.createProduct(id = 2L, category = ProductCategory.PANTS, price = 15000)
         every { repository.findById(any()) } returns Optional.of(existingProduct)
         every { repository.findByBrandIdAndCategory(any(), any()) } returns anotherProduct
 
@@ -123,7 +127,8 @@ class ProductServiceTest {
     fun `deleteProduct should delete a product by id`() {
         // Given
         val id = 1L
-        every { repository.deleteById(any()) } just Runs
+        every { repository.findById(any()) } returns Optional.of(Fixtures.product)
+        every { repository.delete(any()) } just Runs
 
         // When
         service.deleteProduct(id)

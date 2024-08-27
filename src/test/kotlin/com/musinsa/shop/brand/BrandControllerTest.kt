@@ -1,6 +1,7 @@
 package com.musinsa.shop.brand
 
 import com.musinsa.shop.brand.dto.BrandCreateRequest
+import com.musinsa.shop.fixtures.Fixtures
 import com.musinsa.shop.restdocs.RestDocCommon
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.Runs
@@ -24,7 +25,7 @@ class BrandControllerTest : RestDocCommon() {
     @Test
     fun getBrand() {
         // given
-        every { service.getBrand(any()) } returns Brand(id = 1L, name = "test")
+        every { service.getBrand(any()) } returns Fixtures.brand
 
         // when
         val result = mockMvc.perform(get("/v1/brands/{id}", 1L))
@@ -46,7 +47,7 @@ class BrandControllerTest : RestDocCommon() {
     @Test
     fun createBrand() {
         // given
-        every { service.createBrand(any()) } returns Brand(id = 1L, name = "test")
+        every { service.createBrand(any()) } returns Fixtures.brand
 
         // when
         val result = mockMvc.perform(

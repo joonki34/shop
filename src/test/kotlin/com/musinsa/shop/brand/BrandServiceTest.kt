@@ -1,6 +1,7 @@
 package com.musinsa.shop.brand
 
 import com.musinsa.shop.exception.NotFound
+import com.musinsa.shop.fixtures.Fixtures
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -14,7 +15,7 @@ class BrandServiceTest {
     @Test
     fun `createBrand should save and return a brand`() {
         // Given
-        val brand = Brand(name = "Test Brand")
+        val brand = Fixtures.brand
         every { repository.save(any()) } returns brand
 
         // When
@@ -37,12 +38,11 @@ class BrandServiceTest {
     @Test
     fun `getBrand should return a brand by id`() {
         // Given
-        val id = 1L
-        val brand = Brand(id = id, name = "Test Brand")
+        val brand = Fixtures.brand
         every { repository.findById(any()) } returns Optional.of(brand)
 
         // When
-        val foundBrand = service.getBrand(id)
+        val foundBrand = service.getBrand(1L)
 
         // Then
         assert(foundBrand == brand)

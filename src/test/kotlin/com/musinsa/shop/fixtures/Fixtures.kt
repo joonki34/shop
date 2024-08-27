@@ -5,10 +5,13 @@ import com.musinsa.shop.product.Product
 import com.musinsa.shop.product.ProductCategory
 
 object Fixtures {
-    val product = Product(
-        id = 1L,
-        brand = Brand(id = 1L, name = "test"),
-        price = 10000,
-        category = ProductCategory.BAG
-    )
+    fun createBrand(totalPrice: Int = 0) =
+        Brand(id = 1L, name = "Test Brand", totalPrice = totalPrice)
+
+    val brand = Brand(id = 1L, name = "Test Brand", totalPrice = 0)
+
+    fun createProduct(id: Long = 1L, category: ProductCategory = ProductCategory.BAG, price: Int = 10000) =
+        Product(id = id, brand = brand, price = price, category = category)
+
+    val product = createProduct()
 }

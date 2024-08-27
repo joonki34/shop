@@ -12,5 +12,8 @@ class Brand(
     val id: Long? = null,
 
     @Column(name = "name", unique = true, nullable = false)
-    val name: String
+    val name: String,
+
+    @Column(name = "total_price", nullable = false)
+    val totalPrice: Int
 ) : BaseAuditEntity()

@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
+import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -17,6 +19,30 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class SearchControllerTest : RestDocCommon() {
     @MockkBean
     lateinit var service: SearchService
+
+    @Test
+    fun findMinBrand() {
+        // given
+        every { service.findMinBrand() } returns (Fixtures.brand to listOf(Fixtures.product))
+
+        // when
+        val result = mockMvc.perform(get("/v1/search/min-brand"))
+
+        // then
+        result.andExpect(status().isOk)
+            .andDo(
+                document(
+                    "search/min-brand", responseFields(
+                        fieldWithPath("min.brandName").description("브랜드 이름"),
+                        fieldWithPath("min.categoryList").type(JsonFieldType.ARRAY).description("상품 리스트"),
+                        fieldWithPath("min.categoryList[].id").description("상품 ID"),
+                        fieldWithPath("min.categoryList[].category").description("카테고리"),
+                        fieldWithPath("min.categoryList[].price").description("상품 가격"),
+                        fieldWithPath("min.total").description("총 가격"),
+                    )
+                )
+            )
+    }
 
     @Test
     fun findMinMaxProductByCategory() {

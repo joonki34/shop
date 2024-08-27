@@ -1,5 +1,6 @@
 package com.musinsa.shop.product
 
+import com.musinsa.shop.brand.Brand
 import com.musinsa.shop.brand.BrandService
 import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.product.dto.ProductCreateRequest
@@ -25,6 +26,9 @@ class ProductService(private val repository: ProductRepository, private val bran
             throw IllegalArgumentException("Only one product per category is allowed")
         }
 
+        // Update brand price
+        updateBrandPrice(brand, request.price)
+
         return repository.save(request.toEntity(brand))
     }
 
@@ -40,10 +44,22 @@ class ProductService(private val repository: ProductRepository, private val bran
             throw IllegalArgumentException("Only one product per category is allowed")
         }
 
+        // Update brand price
+        updateBrandPrice(product.brand, request.price - product.price)
+
         return repository.save(product.update(category, request.price))
     }
 
+    @Transactional
     fun deleteProduct(id: Long) {
-        repository.deleteById(id)
+        val product = repository.findById(id).orElseThrow { NotFound("Product not found") }
+        repository.delete(product)
+
+        // Update brand price
+        updateBrandPrice(product.brand, product.price)
+    }
+
+    private fun updateBrandPrice(brand: Brand, price: Int) {
+        brandService.updatePrice(brand, price)
     }
 }
