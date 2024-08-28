@@ -3,12 +3,14 @@ package com.musinsa.shop.minproduct
 import com.musinsa.shop.product.ProductCategory
 import com.musinsa.shop.product.ProductRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class MinProductService(
     private val minProductRepository: MinProductRepository,
     private val productRepository: ProductRepository
 ) {
+    @Transactional
     fun updatePriceChanged(category: ProductCategory) {
         val minProduct = minProductRepository.findByCategory(category)
         val newProduct = productRepository.findFirstByCategoryOrderByPrice(category) ?: return
@@ -25,6 +27,7 @@ class MinProductService(
         }
     }
 
+    @Transactional
     fun updateDeleted(category: ProductCategory) {
         val minProduct = minProductRepository.findByCategory(category) ?: return
 
