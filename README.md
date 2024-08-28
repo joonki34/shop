@@ -12,6 +12,8 @@
 
 ## 설명
 
+- 준비된 데이터는 `data.csv`에 저장되어있고 `CsvInitializer.kt` 에서 로드해서 DB에 저장한다.
+
 ### 구현 1) 카테고리 별 최저가격 브랜드와 상품 가격, 총액을 조회하는 API
 
 - API: GET /v1/search/min-product-by-category

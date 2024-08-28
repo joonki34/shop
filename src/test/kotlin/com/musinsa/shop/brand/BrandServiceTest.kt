@@ -14,37 +14,37 @@ class BrandServiceTest {
 
     @Test
     fun `createBrand should save and return a brand`() {
-        // Given
+        // given
         val brand = Fixtures.brand
         every { repository.save(any()) } returns brand
 
-        // When
+        // when
         val createdBrand = service.createBrand(brand)
 
-        // Then
+        // then
         assert(createdBrand == brand)
     }
 
     @Test
     fun `getBrand should return a brand by id`() {
-        // Given
+        // given
         val brand = Fixtures.brand
         every { repository.findById(any()) } returns Optional.of(brand)
 
-        // When
+        // when
         val foundBrand = service.getBrand(1L)
 
-        // Then
+        // then
         assert(foundBrand == brand)
     }
 
     @Test
     fun `getBrand should throw NotFound exception when brand not found`() {
-        // Given
+        // given
         val id = 1L
         every { repository.findById(any()) } returns Optional.empty()
 
-        // When / Then
+        // when / Then
         assertThrows<NotFound> { service.getBrand(id) }
     }
 

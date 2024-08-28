@@ -24,12 +24,14 @@ class CsvInitializerTest {
 
     @Test
     fun `run should return throw InternalServerError exception if csv file is empty`() {
+        // when
         val initializer = CsvInitializer(
             ClassPathResource("test-data-empty.csv"),
             brandService,
             productService
         )
 
+        // then
         assertThrows<InternalServerError> {
             initializer.run(null)
         }
@@ -37,25 +39,28 @@ class CsvInitializerTest {
 
     @Test
     fun `run should filter invalid row`() {
+        // when
         CsvInitializer(
             ClassPathResource("test-data-invalid.csv"),
             brandService,
             productService
         ).run(null)
 
-
+        // then
         verify(exactly = 8) { brandService.createBrand(any()) }
         verify(exactly = 64) { productService.createProduct(any()) }
     }
 
     @Test
     fun `run should parse csv and save to database`() {
+        // when
         CsvInitializer(
             ClassPathResource("test-data.csv"),
             brandService,
             productService
         ).run(null)
 
+        // then
         verify(exactly = 9) { brandService.createBrand(any()) }
         verify(exactly = 72) { productService.createProduct(any()) }
     }

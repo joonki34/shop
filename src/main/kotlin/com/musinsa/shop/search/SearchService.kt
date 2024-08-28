@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,12 +22,12 @@ class SearchService(
     private val brandRepository: BrandRepository,
     private val minProductRepository: MinProductRepository
 ) {
-    //    @Cacheable(cacheNames = ["minProductByCategoryCache"])
+    @Cacheable(cacheNames = ["minProductByCategoryCache"])
     fun findMinProductByCategory(): List<Product> {
         return minProductRepository.findAllProduct()
     }
 
-    //    @Cacheable(cacheNames = ["minMaxProductCache"], key = "#category")
+    @Cacheable(cacheNames = ["minMaxProductCache"], key = "#category")
     fun findMinMaxProductByCategory(category: ProductCategory): Pair<Product?, Product?> {
         val (lowest, highest, _) = runBlocking(Dispatchers.IO) {
             val deferred = listOf(
@@ -40,7 +41,7 @@ class SearchService(
         return lowest to highest
     }
 
-    //    @Cacheable(cacheNames = ["minBrandCache"])
+    @Cacheable(cacheNames = ["minBrandCache"])
     fun findMinBrand(): Pair<Brand, List<Product>> {
         val brand = brandRepository.findFirstByOrderByTotalPrice() ?: throw NotFound("Product not found")
 
