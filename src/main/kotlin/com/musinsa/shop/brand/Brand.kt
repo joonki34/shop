@@ -16,7 +16,7 @@ class Brand(
     @Column(name = "id")
     val id: Long? = null,
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     val name: String,
 
     @Column(name = "total_price", nullable = false)

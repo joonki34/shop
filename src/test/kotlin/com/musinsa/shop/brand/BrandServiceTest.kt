@@ -26,16 +26,6 @@ class BrandServiceTest {
     }
 
     @Test
-    fun `deleteBrand should delete a brand by id`() {
-        // Given
-        val id = 1L
-        every { repository.deleteById(any()) } returns Unit
-
-        // When
-        service.deleteBrand(id)
-    }
-
-    @Test
     fun `getBrand should return a brand by id`() {
         // Given
         val brand = Fixtures.brand

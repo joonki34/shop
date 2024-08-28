@@ -9,10 +9,6 @@ class BrandService(private val repository: BrandRepository) {
         return repository.save(brand)
     }
 
-    fun deleteBrand(id: Long) {
-        repository.deleteById(id)
-    }
-
     fun getBrand(id: Long): Brand {
         return repository.findById(id).orElseThrow { NotFound("Brand not found") }
     }
