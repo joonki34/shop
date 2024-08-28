@@ -75,6 +75,8 @@ curl -X GET 'http://localhost:8080/v1/search/min-product-by-category' -H "Conten
 curl -X POST 'http://localhost:8080/v1/brands' -H "Content-Type: application/json" -d '{"name": "Z"}'
 
 # 상품 API
+curl -X GET 'http://localhost:8080/v1/products?brandName=F' -H "Content-Type: application/json"
+
 curl -X GET 'http://localhost:8080/v1/products/48' -H "Content-Type: application/json"
 
 curl -X PUT 'http://localhost:8080/v1/products/48' -H "Content-Type: application/json" -d '{"category":"액세서리","price":1000}'
