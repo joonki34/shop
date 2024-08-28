@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc
 @ExtendWith(RestDocumentationExtension::class, SpringExtension::class)
 @ActiveProfiles("test")
 @EnableAutoConfiguration
-@AutoConfigureRestDocs(outputDir = "target/snippets")
+@AutoConfigureRestDocs
 open class RestDocCommon {
     @Autowired
     protected lateinit var mockMvc: MockMvc
