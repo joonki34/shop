@@ -5,10 +5,7 @@ import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.fixtures.Fixtures
 import com.musinsa.shop.product.dto.ProductCreateRequest
 import com.musinsa.shop.product.dto.ProductUpdateRequest
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,32 +27,62 @@ class ProductServiceTest {
     }
 
     @Test
+    fun `getProductList should return all products when brandId is null`() {
+        // given
+        val brandId = null
+        val products = listOf(Fixtures.product)
+        every { repository.findAll() } returns products
+
+        // when
+        val foundProducts = service.getProductList(brandId)
+
+        // then
+        assert(foundProducts == products)
+        verify(exactly = 1) { repository.findAll() }
+    }
+
+    @Test
+    fun `getProductList should return products by brandId when brandId is not null`() {
+        // given
+        val brandId = 1L
+        val products = listOf(Fixtures.product)
+        every { repository.findByBrandId(any()) } returns products
+
+        // when
+        val foundProducts = service.getProductList(brandId)
+
+        // then
+        assert(foundProducts == products)
+        verify(exactly = 1) { repository.findByBrandId(1L) }
+    }
+
+    @Test
     fun `getProduct should return a product by id`() {
-        // Given
+        // given
         val id = 1L
         val product = Fixtures.createProduct(id)
         every { repository.findById(any()) } returns Optional.of(product)
 
-        // When
+        // when
         val foundProduct = service.getProduct(id)
 
-        // Then
+        // then
         assert(foundProduct == product)
     }
 
     @Test
     fun `getProduct should throw NotFound exception when product not found`() {
-        // Given
+        // given
         val id = 1L
         every { repository.findById(any()) } returns Optional.empty()
 
-        // When / Then
+        // when / then
         assertThrows<NotFound> { service.getProduct(id) }
     }
 
     @Test
     fun `createProduct should save and return a product`() {
-        // Given
+        // given
         val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
         val brand = Fixtures.brand
         val product = Fixtures.product
@@ -63,29 +90,29 @@ class ProductServiceTest {
         every { repository.findByBrandIdAndCategory(any(), any()) } returns null
         every { repository.save(any()) } returns product
 
-        // When
+        // when
         val createdProduct = service.createProduct(request)
 
-        // Then
+        // then
         assert(createdProduct == product)
     }
 
     @Test
     fun `createProduct should throw IllegalArgumentException when product with same category already exists`() {
-        // Given
+        // given
         val request = ProductCreateRequest(brandId = 1L, category = ProductCategory.TOP.description, price = 10000)
         val brand = Fixtures.brand
         val existingProduct = Product(id = 1L, brand = brand, category = ProductCategory.TOP, price = 10000)
         every { brandService.getBrand(any()) } returns brand
         every { repository.findByBrandIdAndCategory(any(), any()) } returns existingProduct
 
-        // When / Then
+        // when / then
         assertThrows<IllegalArgumentException> { service.createProduct(request) }
     }
 
     @Test
     fun `updateProduct should update and return a product`() {
-        // Given
+        // given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         val existingProduct = Fixtures.createProduct(id, price = 10000)
@@ -94,27 +121,27 @@ class ProductServiceTest {
         every { repository.findByBrandIdAndCategory(any(), any()) } returns null
         every { repository.save(any()) } returns updatedProduct
 
-        // When
+        // when
         val result = service.updateProduct(id, request)
 
-        // Then
+        // then
         assert(result == updatedProduct)
     }
 
     @Test
     fun `updateProduct should throw NotFound exception when product not found`() {
-        // Given
+        // given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         every { repository.findById(any()) } returns Optional.empty()
 
-        // When / Then
+        // when / Then
         assertThrows<NotFound> { service.updateProduct(id, request) }
     }
 
     @Test
     fun `updateProduct should throw IllegalArgumentException when product with same category already exists`() {
-        // Given
+        // given
         val id = 1L
         val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
         val existingProduct = Fixtures.createProduct(id = id, category = ProductCategory.TOP, price = 10000)
@@ -122,18 +149,18 @@ class ProductServiceTest {
         every { repository.findById(any()) } returns Optional.of(existingProduct)
         every { repository.findByBrandIdAndCategory(any(), any()) } returns anotherProduct
 
-        // When / Then
+        // when / Then
         assertThrows<IllegalArgumentException> { service.updateProduct(id, request) }
     }
 
     @Test
     fun `deleteProduct should delete a product by id`() {
-        // Given
+        // given
         val id = 1L
         every { repository.findById(any()) } returns Optional.of(Fixtures.product)
         every { repository.delete(any()) } just Runs
 
-        // When
+        // when
         service.deleteProduct(id)
     }
 }

@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/v1/products")
 class ProductController(private val service: ProductService) {
+    @GetMapping("")
+    fun getProductList(@RequestParam("brandId", required = false) brandId: Long?): List<ProductResponse> {
+        return service.getProductList(brandId).map { ProductResponse.of(it) }
+    }
+
     @GetMapping("/{id}")
     fun getProduct(
         @PathVariable("id") id: Long

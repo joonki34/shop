@@ -15,8 +15,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.payload.ResponseFieldsSnippet
-import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.pathParameters
+import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(ProductController::class)
@@ -24,6 +23,29 @@ class ProductControllerTest : RestDocCommon() {
 
     @MockkBean
     lateinit var service: ProductService
+
+    @Test
+    fun getProductList() {
+        // given
+        every { service.getProductList(any()) } returns listOf(Fixtures.product)
+
+        // when
+        val result = mockMvc.perform(get("/v1/products").queryParam("brandId", "1"))
+
+        // then
+        result.andExpect(status().isOk)
+            .andDo(
+                document(
+                    "product/list", queryParameters(
+                        parameterWithName("brandId").description("브랜드 ID")
+                    ), responseFields(
+                        fieldWithPath("[].id").description("ID"),
+                        fieldWithPath("[].category").description("카테고리"),
+                        fieldWithPath("[].price").description("상품 가격"),
+                    )
+                )
+            )
+    }
 
     @Test
     fun getProduct() {
