@@ -61,6 +61,29 @@
 - 테스트: `./gradlew test`
 - 실행: `./gradlew bootRun` 후 `http://localhost:8080` 호출
 
+## API cURL
+
+```bash
+# 검색 API
+curl -X POST 'http://localhost:8080/v1/search/min-max-price' -H "Content-Type: application/json" -d '{"category": "상의"}'
+
+curl -X GET 'http://localhost:8080/v1/search/min-brand' -H "Content-Type: application/json"
+
+curl -X GET 'http://localhost:8080/v1/search/min-product-by-category' -H "Content-Type: application/json"
+
+# 브랜드 API
+curl -X POST 'http://localhost:8080/v1/brands' -H "Content-Type: application/json" -d '{"name": "Z"}'
+
+# 상품 API
+curl -X GET 'http://localhost:8080/v1/products/48' -H "Content-Type: application/json"
+
+curl -X PUT 'http://localhost:8080/v1/products/48' -H "Content-Type: application/json" -d '{"category":"액세서리","price":1000}'
+
+curl -X POST 'http://localhost:8080/v1/products' -H "Content-Type: application/json" -d '{"brandId": 6, "category":"액세서리","price":500}'
+
+curl -X DELETE 'http://localhost:8080/v1/products/48' -H "Content-Type: application/json"
+```
+
 ## 추가 아이디어
 
 1. 카테고리가 늘거나 줄어들 수 있으면 enum 대신 DB로 관리한다.
