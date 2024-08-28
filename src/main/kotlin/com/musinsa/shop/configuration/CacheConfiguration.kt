@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 class CacheConfiguration : CachingConfigurer {
     override fun cacheManager(): CacheManager {
         return CaffeineCacheManager().apply {
-            setCaffeine(Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS))
+            setCaffeine(Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS))
         }
     }
 }

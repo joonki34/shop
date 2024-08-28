@@ -2,7 +2,6 @@ package com.musinsa.shop.search.dto
 
 import com.musinsa.shop.brand.Brand
 import com.musinsa.shop.product.Product
-import com.musinsa.shop.product.dto.ProductResponse
 import com.musinsa.shop.util.toPriceString
 
 data class MinBrandResponse(
@@ -13,7 +12,7 @@ data class MinBrandResponse(
             return MinBrandResponse(
                 min = MinBrand(
                     brandName = brand.name,
-                    categoryList = list.map { ProductResponse.of(it) },
+                    categoryList = list.map { MinBrandProductResponse.of(it) },
                     total = brand.totalPrice.toPriceString()
                 )
             )
@@ -23,6 +22,20 @@ data class MinBrandResponse(
 
 data class MinBrand(
     val brandName: String,
-    val categoryList: List<ProductResponse>,
+    val categoryList: List<MinBrandProductResponse>,
     val total: String
 )
+
+data class MinBrandProductResponse(
+    val category: String,
+    val price: String
+) {
+    companion object {
+        fun of(product: Product): MinBrandProductResponse {
+            return MinBrandProductResponse(
+                category = product.category.description,
+                price = product.price.toPriceString()
+            )
+        }
+    }
+}

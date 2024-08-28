@@ -44,16 +44,16 @@ class ProductServiceTest {
     @Test
     fun `getProductList should return products by brandId when brandId is not null`() {
         // given
-        val brandId = 1L
+        val brandName = "A"
         val products = listOf(Fixtures.product)
-        every { repository.findByBrandId(any()) } returns products
+        every { repository.findByBrandName(any()) } returns products
 
         // when
-        val foundProducts = service.getProductList(brandId)
+        val foundProducts = service.getProductList(brandName)
 
         // then
         assert(foundProducts == products)
-        verify(exactly = 1) { repository.findByBrandId(1L) }
+        verify(exactly = 1) { repository.findByBrandName(brandName) }
     }
 
     @Test

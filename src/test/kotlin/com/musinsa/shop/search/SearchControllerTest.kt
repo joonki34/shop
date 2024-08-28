@@ -58,7 +58,6 @@ class SearchControllerTest : RestDocCommon() {
                     "search/min-brand", responseFields(
                         fieldWithPath("min.brandName").description("브랜드 이름"),
                         fieldWithPath("min.categoryList").type(JsonFieldType.ARRAY).description("상품 리스트"),
-                        fieldWithPath("min.categoryList[].id").description("상품 ID"),
                         fieldWithPath("min.categoryList[].category").description("카테고리"),
                         fieldWithPath("min.categoryList[].price").description("상품 가격"),
                         fieldWithPath("min.total").description("총 가격"),

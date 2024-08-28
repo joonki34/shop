@@ -21,5 +21,6 @@ object Fixtures {
     fun createProductEvent(eventType: ProductEventType = ProductEventType.CREATED, product: Product = createProduct()) =
         ProductEvent.of(1, eventType, product)
 
-    fun createMinProduct(category: ProductCategory = ProductCategory.BAG) = MinProduct(1L, category, product)
+    fun createMinProduct(category: ProductCategory = ProductCategory.BAG, productId: Long = product.id!!) =
+        MinProduct(1L, category, productId)
 }

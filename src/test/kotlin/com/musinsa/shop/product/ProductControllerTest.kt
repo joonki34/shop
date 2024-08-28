@@ -30,16 +30,18 @@ class ProductControllerTest : RestDocCommon() {
         every { service.getProductList(any()) } returns listOf(Fixtures.product)
 
         // when
-        val result = mockMvc.perform(get("/v1/products").queryParam("brandId", "1"))
+        val result = mockMvc.perform(get("/v1/products").queryParam("brandName", "A"))
 
         // then
         result.andExpect(status().isOk)
             .andDo(
                 document(
                     "product/list", queryParameters(
-                        parameterWithName("brandId").description("브랜드 ID")
+                        parameterWithName("brandName").description("브랜드 이름")
                     ), responseFields(
                         fieldWithPath("[].id").description("ID"),
+                        fieldWithPath("[].brandId").description("브랜드 ID"),
+                        fieldWithPath("[].brandName").description("브랜드 이름"),
                         fieldWithPath("[].category").description("카테고리"),
                         fieldWithPath("[].price").description("상품 가격"),
                     )
@@ -137,6 +139,8 @@ class ProductControllerTest : RestDocCommon() {
 
     private fun productResponseFieldsSnippet(): ResponseFieldsSnippet? = responseFields(
         fieldWithPath("id").description("ID"),
+        fieldWithPath("brandId").description("브랜드 ID"),
+        fieldWithPath("brandName").description("브랜드 이름"),
         fieldWithPath("category").description("카테고리"),
         fieldWithPath("price").description("상품 가격"),
     )

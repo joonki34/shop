@@ -3,7 +3,6 @@ package com.musinsa.shop.search
 import com.musinsa.shop.brand.BrandRepository
 import com.musinsa.shop.exception.NotFound
 import com.musinsa.shop.fixtures.Fixtures
-import com.musinsa.shop.minproduct.MinProduct
 import com.musinsa.shop.minproduct.MinProductRepository
 import com.musinsa.shop.product.ProductCategory
 import com.musinsa.shop.product.ProductRepository
@@ -22,11 +21,8 @@ class SearchServiceTest {
 
     @Test
     fun `findMinProductByCategory should return list of products`() {
-        every { minProductRepository.findAll() } returns mutableListOf(
-            MinProduct(
-                category = ProductCategory.BAG,
-                product = Fixtures.product
-            )
+        every { minProductRepository.findAllProduct() } returns listOf(
+            Fixtures.product
         )
 
         val result = service.findMinProductByCategory()

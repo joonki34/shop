@@ -15,9 +15,9 @@ class ProductService(
     private val brandService: BrandService,
     private val eventPublisher: ApplicationEventPublisher
 ) {
-    fun getProductList(brandId: Long?): List<Product> {
-        return if (brandId == null) repository.findAll()
-        else repository.findByBrandId(brandId)
+    fun getProductList(brandName: String?): List<Product> {
+        return if (brandName == null) repository.findAll()
+        else repository.findByBrandName(brandName)
     }
 
     fun getProduct(id: Long): Product {

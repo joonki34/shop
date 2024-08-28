@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/products")
 class ProductController(private val service: ProductService) {
     @GetMapping("")
-    fun getProductList(@RequestParam("brandId", required = false) brandId: Long?): List<ProductResponse> {
-        return service.getProductList(brandId).map { ProductResponse.of(it) }
+    fun getProductList(@RequestParam("brandName", required = false) brandName: String?): List<ProductResponse> {
+        return service.getProductList(brandName).map { ProductResponse.of(it) }
     }
 
     @GetMapping("/{id}")
