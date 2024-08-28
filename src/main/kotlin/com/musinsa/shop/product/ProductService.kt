@@ -77,7 +77,7 @@ class ProductService(
         eventPublisher.publishEvent(ProductEvent.of(this, ProductEventType.DELETED, product))
 
         // Update brand price
-        updateBrandPrice(product.brand, product.price)
+        updateBrandPrice(product.brand, -product.price)
     }
 
     private fun updateBrandPrice(brand: Brand, price: Int) {

@@ -95,6 +95,7 @@ class ProductServiceTest {
 
         // then
         assert(createdProduct == product)
+        verify(exactly = 1) { brandService.updatePrice(any(), 10000) }
     }
 
     @Test
@@ -114,9 +115,9 @@ class ProductServiceTest {
     fun `updateProduct should update and return a product`() {
         // given
         val id = 1L
-        val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 20000)
+        val request = ProductUpdateRequest(category = ProductCategory.PANTS.description, price = 30000)
         val existingProduct = Fixtures.createProduct(id, price = 10000)
-        val updatedProduct = Fixtures.createProduct(id, price = 20000)
+        val updatedProduct = Fixtures.createProduct(id, price = 30000)
         every { repository.findById(any()) } returns Optional.of(existingProduct)
         every { repository.findByBrandIdAndCategory(any(), any()) } returns null
         every { repository.save(any()) } returns updatedProduct
@@ -126,6 +127,7 @@ class ProductServiceTest {
 
         // then
         assert(result == updatedProduct)
+        verify(exactly = 1) { brandService.updatePrice(any(), 20000) }
     }
 
     @Test
@@ -162,5 +164,8 @@ class ProductServiceTest {
 
         // when
         service.deleteProduct(id)
+
+        // then
+        verify(exactly = 1) { brandService.updatePrice(any(), -10000) }
     }
 }
