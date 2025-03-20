@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*
 class BrandController(private val service: BrandService) {
     @GetMapping("/{id}")
     fun getBrand(@PathVariable("id") id: Long): BrandResponse {
+        val a = "hello"
         return BrandResponse.of(service.getBrand(id))
     }
 
