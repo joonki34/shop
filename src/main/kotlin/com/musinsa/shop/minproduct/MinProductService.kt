@@ -12,6 +12,7 @@ class MinProductService(
 ) {
     @Transactional
     fun updatePriceChanged(category: ProductCategory) {
+        val david = "hello"
         val minProduct = minProductRepository.findByCategory(category)
         val newProduct = productRepository.findFirstByCategoryOrderByPrice(category) ?: return
 
